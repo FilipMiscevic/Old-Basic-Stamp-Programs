@@ -1,0 +1,142 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+     #DEFINE I2cReady = ($Stamp = BS2)
+     #IF NOT I2cReady #THEN
+     #ERROR  "A BS2 stamp is required for this program."
+     #ENDIF
+
+TSwitch VAR Word
+
+Main:
+
+ LOW 0
+ LOW 1
+ LOW 2
+ HIGH 3
+ HIGH 4
+ HIGH 5
+ HIGH 6
+ HIGH 7
+ HIGH 8
+ LOW 9
+ LOW 10
+ GOSUB SendBit
+ GOSUB WWS
+
+SendBit:
+
+ PAUSE 1
+ OUT2 = 1
+ PAUSE 2
+ OUT2 = 0
+
+ HIGH 0
+ LOW 1
+ LOW 2
+ LOW 3
+ LOW 4
+ LOW 5
+ LOW 6
+ LOW 7
+ LOW 8
+ LOW 9
+ LOW 10
+ RETURN
+
+Space:
+
+ HIGH 5
+ OUT2 = 1
+ PAUSE 2
+ OUT2 = 0
+ LOW 5
+ RETURN
+
+WWS:
+
+ HIGH 4
+ HIGH 6
+ HIGH 8
+ HIGH 9
+ HIGH 10
+ GOSUB SendBit
+ HIGH 4
+ HIGH 5
+ HIGH 7
+ HIGH 10
+ GOSUB SendBit
+ HIGH 4
+ HIGH 5
+ HIGH 7
+ HIGH 8
+ HIGH 9
+ GOSUB SendBit
+ HIGH 4
+ HIGH 5
+ HIGH 8
+ GOSUB SendBit
+ GOSUB Space
+ HIGH 4
+ HIGH 6
+ HIGH 9
+ HIGH 10
+ GOSUB SendBit
+ HIGH 3
+ HIGH 4
+ HIGH 5
+ HIGH 6
+ GOSUB SendBit
+ HIGH 4
+ HIGH 5
+ HIGH 8
+ HIGH 10
+ OUT2 = 1
+ PAUSE 2
+ OUT2 = 0
+ LOW 10
+ GOSUB SendBit
+ GOSUB SPace
+ HIGH 7
+ GOSUB Space
+ HIGH 4
+ HIGH 5
+ HIGH 9
+ HIGH 10
+ GOSUB SendBit
+ HIGH 4
+ HIGH 5
+ HIGH 7
+ HIGH 8
+ HIGH 10
+ GOSUB SendBit
+ HIGH 5
+ HIGH 7
+ HIGH 8
+ HIGH 9
+ HIGH 10
+ GOSUB SendBit
+ HIGH 4
+ HIGH 5
+ HIGH 7
+ GOSUB SendBit
+ HIGH 5
+ HIGH 7
+ HIGH 10
+ GOSUB SendBit
+ HIGH 5
+ HIGH 6
+ HIGH 7
+ HIGH 9
+ GOSUB SendBit
+ GOSUB Space
+ GOSUB Space
+ GOSUB Space
+ GOSUB Space
+ GOSUB Space
+ GOSUB Space
+ GOSUB DWS
+ END
+
+DWS:
+
+ RCTIME 11,1,TSwitch
