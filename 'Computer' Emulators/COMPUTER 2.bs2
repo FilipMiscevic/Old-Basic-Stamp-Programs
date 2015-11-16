@@ -1,0 +1,143 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+lines VAR Nib
+value VAR Word
+
+Main:
+       #DEFINE I2cReady = ($Stamp = BS2)
+       #IF NOT I2cReady #THEN
+       #ERROR  "A BS2 stamp is required for this program."
+       #ENDIF
+       PAUSE 2500
+       DEBUG CLS, "Filip Systems (c)",CR,CR
+       PAUSE 3000
+       DEBUG "Starting IBM DOS..."
+       PAUSE 2500
+       DEBUG CLS, "Enter Program Code: "
+       GOSUB Soft_Prog
+
+Soft_Prog:
+
+       DEBUGIN DEC1 lines
+       IF lines = 1 THEN GOSUB DOS_Prompt
+       IF lines = 2 THEN GOSUB WIN_1
+       IF lines = 3 THEN GOSUB Song_Prog
+       IF lines = 4 THEN GOSUB DOS_off
+       END
+
+Pad_Prog:
+
+       DEBUG CR,CR,CR,CR, "To print your number, press one."
+       PAUSE 500
+       DEBUG CR, "To write another number, press two."
+       PAUSE 500
+       DEBUG CR, "To quit this program and select another one, press three.",CR
+       PAUSE 500
+       DEBUG CR, "To shut-down all programs, press four.",CR,CR
+       DEBUGIN DEC1 lines
+       IF lines = 1 THEN DEBUG CLS: DEBUG? value: PAUSE 1800: GOSUB Pad_Prog
+       IF lines = 2 THEN PAUSE 700: GOSUB WIN_1
+       IF lines = 3 THEN PAUSE 700: GOSUB DOS_Prompt
+       IF lines = 4 THEN PAUSE 700: GOSUB DOS_off
+       END
+
+Song_Prog:
+
+       DEBUG CLS, "WARNING! This program requires a LED wired to ouput 8 and a piezo transducer wired to ouput 1.",CR
+       DEBUG "The program will not load correctly without these.",CR,CR,CR
+       PAUSE 800
+       DEBUG "To abort, press one. "
+       DEBUG "To continue, press zero."
+       DEBUGIN DEC1 lines
+       IF lines = 1 THEN GOSUB DOS_Prompt
+       IF lines = 0 THEN DEBUG CLS: GOSUB WIN_2
+       END
+
+DOS_Prompt:
+
+       DEBUG CLS, "Select program:" ,CR, "C:/OS? = "
+       GOSUB Soft_Prog
+       END
+
+DOS_off:
+
+       DEBUG CLS, "Commence shut-down?",CR,CR
+       DEBUGIN DEC1 lines
+       IF lines = 1 THEN PAUSE 900: DEBUG CLS: PAUSE 600: DEBUG "Shut-down commencing.": PAUSE 900: DEBUG CLS, "Good Bye!": PAUSE 900: DEBUG CLS: DEBUGIN DEC1 lines: IF 1 THEN GOSUB Main
+       IF lines = 2 THEN PAUSE 700: GOSUB Main
+       END
+
+WIN_1:
+
+       DEBUG CLS, "Welcome to Microsoft Number Pad!",CR,CR
+       PAUSE 2000
+       DEBUG CR,CR,CR, "Write your number in the lines below, followed by a vowel to commence interpretation."
+       PAUSE 2500
+       DEBUG CLS
+       PAUSE 800
+       DEBUGIN DEC lines
+       value = lines
+       DEBUG CR,CR,CR
+       DEBUG "Your hexidecimal value in decimal:",CR
+       DEBUG? value
+       PAUSE 600
+       GOSUB Pad_Prog
+       END
+
+WIN_2:
+
+       HIGH 8
+        FREQOUT 1, 600, 932
+        FREQOUT 1, 500, 880
+        LOW 8
+        FREQOUT 1, 600, 932
+        FREQOUT 1, 800, 1050
+        HIGH 8
+        FREQOUT 1, 300, 932
+        FREQOUT 1, 750, 880
+        LOW 8
+        PAUSE 750
+        FREQOUT 1, 600, 932
+        HIGH 8
+        FREQOUT 1, 500, 880
+        FREQOUT 1, 600, 932
+        LOW 8
+        FREQOUT 1, 800, 1050
+        FREQOUT 1, 300, 932
+        HIGH 8
+        FREQOUT 1, 850, 880
+        PAUSE 200
+        LOW 8
+        FREQOUT 1, 1100, 1397
+        HIGH 8
+        FREQOUT 1, 750, 1568
+        FREQOUT 1, 400, 1397
+        LOW 8
+        FREQOUT 1, 450, 1397
+        FREQOUT 1, 750, 932
+        HIGH 8
+        PAUSE 700
+        FREQOUT 1, 600, 1397
+        LOW 8
+        FREQOUT 1, 250, 1245
+        FREQOUT 1, 300, 1397
+        HIGH 8
+        FREQOUT 1, 500, 1568
+        PAUSE 400
+        FREQOUT 1, 500, 1175
+        LOW 8
+        FREQOUT 1, 300, 1050
+        FREQOUT 1, 300, 1175
+        HIGH 8
+        FREQOUT 1, 600, 1245
+        PAUSE 200
+        HIGH 8
+        FREQOUT 1, 340, 880
+        LOW 8
+        FREQOUT 1, 1200, 932
+        HIGH 8
+        PAUSE 1100
+        LOW 8
+       PAUSE 2500
+       GOSUB DOS_Prompt
+       END
