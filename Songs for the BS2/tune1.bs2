@@ -1,0 +1,10 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+
+       FREQOUT 1, 1000, 783
+       FREQOUT 1, 1000, 988 'Tone at 1000Hz for 2 seconds
+       FREQOUT 1, 1000, 1175
+       FREQOUT 1, 1000, 1980
+       FREQOUT 1, 1500, 1567
+       FREQOUT 1, 500, 1480
+       FREQOUT 1, 1000, 1567

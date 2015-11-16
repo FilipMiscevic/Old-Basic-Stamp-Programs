@@ -1,0 +1,213 @@
+'{$STAMP BS2}
+'{$PBASIC 2.5}
+
+'  Variables
+
+'  Mainline
+        HIGH SC                         '  Set the I/O Bits As O/P
+        HIGH SD                         '   and High
+        HIGH LED
+
+'  #### - Put Application Code Here
+        DIRL = %11111111                '  Enable the Outputs
+        DIR8 = 1
+        DIR9 = 1
+        OUTL = 0                        '  All Outputs "0"
+        OUT8 = 0
+        OUT9 = 0
+
+        PAUSE 100                       '  Stop Robot From Moving
+        RobotData = RobotStop           '  Stop the Robot
+        GOSUB RobotSend
+
+        DO
+                PAUSE 100               '  Poll 10x/Second
+
+                RobotData = RobotBUTTON '  Read the Buttons
+                GOSUB RobotSendReceive
+
+'                DEBUG ? RobotData, CR   '  Used for Testing Values
+
+                SELECT RobotData        '  Process the Buttons
+                        CASE 1          '  "Button 1" Pressed
+                                HIGH 8 'Turn off LED
+                                FREQOUT 1,500,261
+                                DEBUG "The status of output 8 is a:",CR: IF OUT8 = 1 THEN DEBUG "1 (on).",CR
+                                                                         IF OUT8 = 0 THEN DEBUG "0 (off).",CR
+                                PAUSE 1000 'Wait 1 second
+                                LOW 8 'Turn on LED
+                                DEBUG "The status of output 8 is a:",CR: IF OUT8 = 1 THEN DEBUG "1 (on).",CR
+                                                                         IF OUT8 = 0 THEN DEBUG "0 (off).",CR
+                                PAUSE 1000
+                        CASE 2          '  "Button 2" Pressed
+                                FREQOUT 1, 1100, 1050
+                                FREQOUT 1, 500, 1320
+                                FREQOUT 1, 500, 1175
+                                FREQOUT 1, 500, 1050
+                                FREQOUT 1, 600, 990
+                                FREQOUT 1, 850, 880
+                                FREQOUT 1, 250, 786
+                                FREQOUT 1, 250, 1050
+                                FREQOUT 1, 300, 1320
+                                FREQOUT 1, 500, 1775
+                                PAUSE 250
+                                FREQOUT 1, 300, 1567
+                                FREQOUT 1, 250, 1320
+                                FREQOUT 1, 260, 1175
+                                FREQOUT 1, 800, 1320
+                                FREQOUT 1, 300, 1760
+                                FREQOUT 1, 250, 1320
+                                FREQOUT 1, 250, 1175
+                                FREQOUT 1, 500, 1320
+                                FREQOUT 1, 550, 1050
+                                FREQOUT 1, 450, 1320
+                                FREQOUT 1, 320, 2093
+                                FREQOUT 1, 300, 2093
+                                FREQOUT 1, 1600, 2093
+                                PAUSE 400
+                                FREQOUT 1, 530, 1175
+                                FREQOUT 1, 520, 1320
+                                FREQOUT 1, 520, 1395
+                                FREQOUT 1, 520, 1567
+                                FREQOUT 1, 520, 1760
+                                FREQOUT 1, 520, 1975
+                                FREQOUT 1, 520, 1975
+                                FREQOUT 1, 700, 2093
+                                FREQOUT 1, 320, 1567
+                                FREQOUT 1, 700, 1320
+                                PAUSE 500
+                                FREQOUT 1, 1000, 1567
+                                FREQOUT 1, 600, 1175
+                                FREQOUT 1, 500, 1175
+                                FREQOUT 1, 800, 1175
+                                PAUSE 600
+                                FREQOUT 1, 1500, 2637
+                                FREQOUT 1, 2500, 2093
+                        CASE 3          '  "Button 3" Pressed
+                                HIGH 8
+                                FREQOUT 1, 600, 932
+                                FREQOUT 1, 500, 880
+                                LOW 8
+                                FREQOUT 1, 600, 932
+                                FREQOUT 1, 800, 1050
+                                HIGH 8
+                                FREQOUT 1, 300, 932
+                                FREQOUT 1, 750, 880
+                                LOW 8
+                                PAUSE 750
+                                FREQOUT 1, 600, 932
+                                HIGH 8
+                                FREQOUT 1, 500, 880
+                                FREQOUT 1, 600, 932
+                                LOW 8
+                                FREQOUT 1, 800, 1050
+                                FREQOUT 1, 300, 932
+                                HIGH 8
+                                FREQOUT 1, 850, 880
+                                PAUSE 200
+                                LOW 8
+                                FREQOUT 1, 1100, 1397
+                                HIGH 8
+                                FREQOUT 1, 750, 1568
+                                FREQOUT 1, 400, 1397
+                                LOW 8
+                                FREQOUT 1, 450, 1397
+                                FREQOUT 1, 750, 932
+                                HIGH 8
+                                PAUSE 700
+                                FREQOUT 1, 600, 1397
+                                LOW 8
+                                FREQOUT 1, 250, 1245
+                                FREQOUT 1, 300, 1397
+                                HIGH 8
+                                FREQOUT 1, 500, 1568
+                                PAUSE 400
+                                FREQOUT 1, 500, 1175
+                                LOW 8
+                                FREQOUT 1, 300, 1050
+                                FREQOUT 1, 300, 1175
+                                HIGH 8
+                                FREQOUT 1, 600, 1245
+                                PAUSE 200
+                                HIGH 8
+                                FREQOUT 1, 340, 880
+                                LOW 8
+                                FREQOUT 1, 1200, 932
+                                HIGH 8
+                                PAUSE 1100
+                                LOW 8
+                ENDSELECT
+        LOOP
+
+
+'  Robot Interface Code Follows:
+'
+'  Myke Predko
+'
+'  Copyright (C) 2004 McGraw-Hill
+'
+'  Robot Commands
+RobotStop     CON  0     '  Stop the Robot
+Behavior1     CON  1     '  Random Movement
+Behavior2     CON  2     '  Photovore
+Behavior3     CON  3     '  Photophobe
+Behavior4     CON  4     '  Wall Hugger/Maze Solver
+RobotForward  CON  5     '  Move Forward for 200 msecs
+RobotReverse  CON  6     '  Move Reverse for 200 msecs
+RobotLeft     CON  7     '  Turn Left for 200 msecs
+RobotRight    CON  8     '  Turn Right for 200 msecs
+RobotLEDOn    CON  9     '  Turn on the Robot's LED
+RobotLEDOff   CON 10     '  Turn off the Robot's LED
+RobotPWM0     CON 11     '  PWM = 0% Duty Cycle
+RobotPWM1     CON 12     '  PWM = 1st "Notch"
+RobotPWM2     CON 13     '  PWM = 2nd "Notch"
+RobotPWM3     CON 14     '  PWM = 3rd "Notch"
+RobotPWM4     CON 15     '  PWM = 100% Duty Cycle
+RobotPWM      CON 16     '  Return the Current PWM Value
+RobotState    CON 17     '  Return the Executing State
+RobotWhiskers CON 18     '  Return State of the "Whiskers"
+                         '   Bit 0 - Left "Whisker"
+                         '   Bit 1 - Right "Whisker"
+RobotCDSL     CON 19     '  Return Value of Left CDS Cell
+RobotCDSR     CON 20     '  Return Value of Right CDS Cell
+RobotBUTTON   CON 21     '  Return the Last Remote Button Press
+                         '   0 - No Buttons Pressed
+                         '   1 - Leftmost Button Pressed
+                         '   2 - Middle Button Pressed
+                         '   3 - Rightmost Button Pressed
+                         '  After "RobotButton" Operation,
+                         '   Button Save is Cleared
+
+'  ROBOt Interface Pins
+SC  PIN 14               '  Define the I/O Pins
+SD  PIN 15
+LED PIN 11               '  ON PCB LED
+
+'  Robot Interface Variables
+RobotData VAR Byte       '  Data Byte to Send to/Receive
+                         '   from Robot
+
+'  Robot Operation Subroutines
+RobotSend:               '  Send the Byte in "RobotData"
+        IF ((RobotData = RobotLEDOn) OR (RobotData = RobotLEDOff)) THEN
+                IF (RobotData = RobotLEDOn) THEN
+                        LOW LED
+                ELSE     '  LED Off
+                        HIGH LED
+                ENDIF
+        ELSE
+                LOW SC   '  Hold Low for 1 msec before
+                PAUSE 1  '  Shifting in DATA
+                SHIFTOUT SD, SC, LSBFIRST, [RobotData]
+                HIGH SC
+        ENDIF
+        RETURN
+
+RobotSendReceive:        '  Send the Byte in "RobotData"
+        LOW SC           '  Hold Low for 1 msec before
+        PAUSE 1          '   Shifting in Data
+        SHIFTOUT SD, SC, LSBFIRST, [RobotData]
+        PAUSE 1          '  Wait for Operation to Complete
+        SHIFTIN SD, SC, LSBPOST, [RobotData]
+        HIGH SC
+        RETURN
