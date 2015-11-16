@@ -1,0 +1,90 @@
+'{$STAMP BS2}
+'{$PBASIC 2.5}
+             RobotData = RobotStop
+             GOSUB RobotSend
+DO
+             PAUSE 1000
+             LOW 2
+             HIGH 0
+             HIGH 5
+             PAUSE 5000
+             LOW 0
+             HIGH 8
+             FREQOUT 11, 1500, 1
+             LOW 8
+             HIGH 2
+             PAUSE 1000
+             LOW 5
+             HIGH 3
+             PAUSE 5000
+             LOW 3
+             HIGH 4
+             FREQOUT 11, 1500, 1
+             LOW 4
+             HIGH 5
+LOOP
+
+RobotStop     CON  0     '  Stop the Robot
+Behavior1     CON  1     '  Random Movement
+Behavior2     CON  2     '  Photovore
+Behavior3     CON  3     '  Photophobe
+Behavior4     CON  4     '  Wall Hugger/Maze Solver
+RobotForward  CON  5     '  Move Forward for 200 msecs
+RobotReverse  CON  6     '  Move Reverse for 200 msecs
+RobotLeft     CON  7     '  Turn Left for 200 msecs
+RobotRight    CON  8     '  Turn Right for 200 msecs
+RobotLEDOn    CON  9     '  Turn on the Robot's LED
+RobotLEDOff   CON 10     '  Turn off the Robot's LED
+RobotPWM0     CON 11     '  PWM = 0% Duty Cycle
+RobotPWM1     CON 12     '  PWM = 1st "Notch"
+RobotPWM2     CON 13     '  PWM = 2nd "Notch"
+RobotPWM3     CON 14     '  PWM = 3rd "Notch"
+RobotPWM4     CON 15     '  PWM = 100% Duty Cycle
+RobotPWM      CON 16     '  Return the Current PWM Value
+RobotState    CON 17     '  Return the Executing State
+RobotWhiskers CON 18     '  Return State of the "Whiskers"
+                         '   Bit 0 - Left "Whisker"
+                         '   Bit 1 - Right "Whisker"
+RobotCDSL     CON 19     '  Return Value of Left CDS Cell
+RobotCDSR     CON 20     '  Return Value of Right CDS Cell
+RobotBUTTON   CON 21     '  Return the Last Remote Button Press
+                         '   0 - No Buttons Pressed
+                         '   1 - Leftmost Button Pressed
+                         '   2 - Middle Button Pressed
+                         '   3 - Rightmost Button Pressed
+                         '  After "RobotButton" Operation,
+                         '   Button Save is Cleared
+
+'  ROBOt Interface Pins
+SC  PIN 14               '  Define the I/O Pins
+SD  PIN 15
+LED PIN 11               '  ON PCB LED
+
+'  Robot Interface Variables
+RobotData VAR Byte       '  Data Byte to Send to/Receive
+                         '   from Robot
+
+'  Robot Operation Subroutines
+RobotSend:               '  Send the Byte in "RobotData"
+        IF ((RobotData = RobotLEDOn) OR (RobotData = RobotLEDOff)) THEN
+                IF (RobotData = RobotLEDOn) THEN
+                        LOW LED
+                ELSE     '  LED Off
+                        HIGH LED
+                ENDIF
+        ELSE
+                LOW SC   '  Hold Low for 1 msec before
+                PAUSE 1  '  Shifting in DATA
+                SHIFTOUT SD, SC, LSBFIRST, [RobotData]
+                HIGH SC
+        ENDIF
+        RETURN
+
+RobotSendReceive:        '  Send the Byte in "RobotData"
+        LOW SC           '  Hold Low for 1 msec before
+        PAUSE 1          '   Shifting in Data
+        SHIFTOUT SD, SC, LSBFIRST, [RobotData]
+        PAUSE 1          '  Wait for Operation to Complete
+        SHIFTIN SD, SC, LSBPOST, [RobotData]
+        HIGH SC
+        RETURN
